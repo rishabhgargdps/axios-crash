@@ -1,5 +1,6 @@
 //for customer header of multiple routes
-axios.defaults.headers.common["X-Auth-Token"] = "sometoken";
+axios.defaults.headers.common["X-Auth-Token"] =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
 // GET REQUEST
 function getTodos() {
@@ -105,12 +106,37 @@ function transformResponse() {
 
 // ERROR HANDLING
 function errorHandling() {
-  console.log("Error Handling");
+  axios
+    .get("https://jsonplaceholder.typicode.com/todos?_limit=5")
+    .then((res) => showOutput(res))
+    .catch((err) => {
+      if (err.response) {
+        console.log(err.response.data);
+        console.log(err.response.status);
+        console.log(err.response.headers);
+        if (err.response.status === 404) {
+          alert("Error: Page not found");
+        } else if (err.request) {
+          console.log(err.request);
+        } else {
+          console.log(err.message);
+        }
+      }
+    });
 }
 
 // CANCEL TOKEN
 function cancelToken() {
-  console.log("Cancel Token");
+  const source = axios.CancelToken.source();
+  axios.get("https://jsonplaceholder.typicode.com/todos", {
+    cancelToken = source.token()
+  })
+  .then(res => console.log(res))
+  .catch(thrown => {
+    if (axios.isCancel(thrown)) {
+      console.log("Request cancelled", thrown.message)
+    }
+  })
 }
 
 // INTERCEPTING REQUESTS & RESPONSES
